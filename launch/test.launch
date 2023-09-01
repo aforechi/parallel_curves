@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="parallel_curves" type="shortest_path_test" name="shortest_path_test" output="screen" launch-prefix="valgrind --leak-check=full"/>
+</launch>

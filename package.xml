@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>parallel_curves</name>
+  <version>0.0.1</version>
+  <description>The Parallel Curves Path Planning package</description>
+
+  <maintainer email="avelino@lcad.inf.ufes.br">Avelino Forechi</maintainer>
+
+  <author email="avelino@lcad.inf.ufes.br">Avelino Forechi</author> -->
+
+  <!-- One license tag required, multiple allowed, one license per tag -->
+  <!-- Commonly used license strings: -->
+  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
+  <license>TODO</license>
+
+
+  <!-- Url tags are optional, but multiple are allowed, one per tag -->
+  <!-- Optional attribute type can be: website, bugtracker, or repository -->
+  <!-- Example: -->
+  <!-- <url type="website">http://wiki.ros.org/parallel_curves</url> -->
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+    
+  <depend>roscpp</depend>
+  <depend>costmap_2d</depend>
+  <depend>nav_core</depend>
+  <depend>pluginlib</depend>
+  <depend>base_local_planner</depend>
+  <depend>geometry_msgs</depend>
+  <depend>netpbm</depend> <!-- This is a test dependency -->
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+    <nav_core plugin="${prefix}/pc_plugin.xml" />
+  </export>
+</package>
