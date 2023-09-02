@@ -84,6 +84,9 @@ bool ParallelCurvesRos::makePlan(const geometry_msgs::PoseStamped& start, const 
     parallel_curves::ParallelCurves::Point start2D = {start.pose.position.x, start.pose.position.y};
     parallel_curves::ParallelCurves::Point goal2D = {goal.pose.position.x, goal.pose.position.y};
 
+    //clear the starting cell within the costmap because we know it can't be an obstacle
+    collision_->clearRobotCell(start2D);
+
     if (!collision_->collisionFree(start2D)) 
     {
         ROS_ERROR("Start point chosen is NOT in the FREE SPACE! Choose other goal!");
@@ -95,9 +98,6 @@ bool ParallelCurvesRos::makePlan(const geometry_msgs::PoseStamped& start, const 
         ROS_ERROR("Goal point chosen is NOT in the FREE SPACE! Choose other goal!");
         return false;
     }
-
-    //clear the starting cell within the costmap because we know it can't be an obstacle
-    collision_->clearRobotCell(start2D);
 
     ROS_INFO("Parallel Curves Global Planner");
     ROS_INFO("Current Position: ( %.2lf, %.2lf)", start2D[0], start2D[1]);
