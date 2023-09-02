@@ -43,13 +43,11 @@ namespace parallel_curves
 
         constexpr bool operator==(const Node& that) const
         {
-            //return this->id == that.id;
             return (this->pt[0] == that.pt[0]) && (this->pt[1] == that.pt[1]);
         }
 
         constexpr bool operator!=(const Node& that) const
         {
-            //return this->id != that.id;
             return (this->pt[0] != that.pt[0]) || (this->pt[1] != that.pt[1]);
         }
 
@@ -143,17 +141,11 @@ namespace parallel_curves
         }
 
         /**
-         * To add an edge
+         * To add an edge for a directed graph
         */
         void addEdge(const Node& first, const Node& second, double weight)
         {
-            // if (!findNode(first))
-            //     throw std::runtime_error("Edge node not found in the graph.");
-            // if (!findNode(second)) 
-            //     throw std::runtime_error("Edge node not found in the graph.");
             adj[first.node()].push_back(std::make_pair(second, weight));
-            //can not assume a bidirectional edge
-            //adj[second.node()].push_back(std::make_pair(first, weight));
         }
     
         /**
@@ -162,14 +154,12 @@ namespace parallel_curves
         */ 
         std::pair<std::vector<double>, std::vector<Node> > dijkstra(const Node& source) const
         {
-            // if (!findNode(source))
-            //     throw std::runtime_error("Node not found in the graph.");
-
             // Create a priority queue to store vertices that are being preprocessed. This is weird syntax in C++.
             std::priority_queue<WeightNodePair, std::vector<WeightNodePair>, std::greater<WeightNodePair> > pq;
 
             // Create a vector for distances and initialize all distances as infinite (INF)
             std::vector<double> dist(size(), INF);
+
             // Create a vector for path and initialize all nodes as invalid (-1)
             std::vector<Node> path(size(), -1);
 
@@ -209,11 +199,6 @@ namespace parallel_curves
 
         std::vector<Node> shortestPath(const Node& source, const Node& target) const 
         {
-            // if (!findNode(source))
-            //     throw std::runtime_error("Source node not found in the graph.");
-            // if (!findNode(target))
-            //     throw std::runtime_error("Target node not found in the graph.");
-
             auto results = dijkstra(source);
             std::vector<Node> paths = results.second;
             std::vector<Node> shortest;
@@ -231,8 +216,6 @@ namespace parallel_curves
 
         double shortestDistance(const Node& source, const Node& target) const
         {
-            // if (!findNode(target))
-            //     throw std::runtime_error("Node not found in the graph.");
             auto results = dijkstra(source);
             std::vector<double> dist = results.first;
             return dist[target.node()];

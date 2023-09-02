@@ -141,7 +141,6 @@ namespace parallel_curves
                 if (insideTheCircle(origin_node.center(), target_node.center(), target_radius)) 
                 {
                     addSecantNodes(origin_node, target_node, target_radius);
-                    //TODO check if can be removed as max_range already works as limitation. The difference is that the continue jumps the found path below
                     if (iterations_inside_the_circle < _max_iterations_inside_the_circle) 
                     {
                         iterations_inside_the_circle += 1;
@@ -159,7 +158,7 @@ namespace parallel_curves
                         if (directPath(node.first.center(), target_node.center()))
                             if (node.first != target_node)
                                 G->addEdge(node.first, target_node, distanceBetweenPoints(node.first.center(), target_node.center()));
-                    break; //FIXME shouldn't be here
+                    break; 
                 }
             }
         }
