@@ -34,8 +34,6 @@
 
 namespace parallel_curves {
 
-typedef std::array<double,2> Point;
-
 class ParallelCurvesCostmap : public parallel_curves::ParallelCurves 
 {
 public:
@@ -255,6 +253,7 @@ TEST(PathCalc, oscillate_in_pinch_point)
   parallel_curves::Point goal = {350, 450};
 
   auto path = nav->plan( start, goal );
+
   EXPECT_TRUE( path.size() > 0 );
   
   delete nav;
@@ -269,6 +268,7 @@ TEST(PathCalc, maze_simple)
   parallel_curves::Point goal =  {1.6, 8.0};
 
   auto path = nav->plan( start, goal );
+
   EXPECT_EQ(path.size(), 5);
 
   parallel_curves::Point path_correct[] = {{4.6, 2.4}, 
@@ -292,6 +292,7 @@ TEST(PathCalc, easy_nav_should_always_work)
   parallel_curves::Point goal = {350, 450};
 
   auto path = nav->plan( start, goal );
+
   EXPECT_TRUE( path.size() > 0 );
 
   delete nav;

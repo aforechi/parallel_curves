@@ -13,23 +13,26 @@ namespace parallel_curves
     #define INF std::numeric_limits<double>::infinity()
 
     typedef std::array<double,2> Point;
-    typedef std::array<double,3> Circle;
 
     class Node
     {
     private:
         int id;
         Point pt;
-        //std::vector<Circle> annotations; 
+        double pcr; 
     public:
         Node() : id(-1) {}
         Node(int id): id(id) {}
-        Node(Point pt): id(0), pt(pt) {}
         Node(int id, Point pt): id(id), pt(pt) {}
+        Node(Point pt): id(-1), pt(pt) {}
+        Node(Point pt, double pcr): id(-1), pt(pt), pcr(pcr) {}
+        Node(Point pt, double pcr, int id): pt(pt), pcr(pcr), id(id) {}
 
         constexpr int node() const {return id;}
 
         constexpr Point center() const {return pt;}
+
+        constexpr double target() const {return pcr;}
 
         operator Point() const 
         {
@@ -124,7 +127,7 @@ namespace parallel_curves
         {
             auto index = findNode(v);
             if (index < 0)
-                return addNode(v.center());
+                return addNode(v.center(), v.target());
             else
                 return getNode(index);
         }
@@ -132,9 +135,9 @@ namespace parallel_curves
         /**
          * To add a node from point
         */
-        Node addNode(const Point& pt)
+        Node addNode(const Point& pt, const double pcr)
         {
-            Node v_new(nodes.size(), pt);
+            Node v_new(pt, pcr, nodes.size());
             adj.push_back(std::vector<NodeWeightPair>());
             nodes.push_back(v_new);
             return v_new;

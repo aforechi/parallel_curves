@@ -28,7 +28,6 @@ namespace parallel_curves {
         ~ParallelCurves() {}
         
     protected:
-        typedef std::array<double,2> Point;
         
         virtual bool directPath(const Point& start, const Point& target) = 0;
 
@@ -45,7 +44,7 @@ namespace parallel_curves {
         /**
          * @brief: Find the distance from the external point to the tangent points of the circle with center and radius.
         */
-        inline double distanceBetweenExternalPointAndTangentPoints(ParallelCurves::Point center, double radius, ParallelCurves::Point external_point){
+        inline double distanceBetweenExternalPointAndTangentPoints(Point center, double radius, Point external_point){
             double dx = center[0] - external_point[0];
             double dy = center[1] - external_point[1];
             double d2 = dx * dx + dy * dy;
@@ -60,7 +59,7 @@ namespace parallel_curves {
         /**
          * @brief: Return true if the point is inside the circle defined by center and radius. And false otherwise.
         */
-        inline bool insideTheCircle(ParallelCurves::Point pt, ParallelCurves::Point center, double radius){
+        inline bool insideTheCircle(Point pt, Point center, double radius){
             double dx = center[0] - pt[0];
             double dy = center[1] - pt[1];
             double d2 = dx * dx + dy * dy;
@@ -72,14 +71,14 @@ namespace parallel_curves {
          * @brief Find the points where the two circles intersect.
          *   @see: http://www.vb-helper.com/howto_net_circle_circle_intersection.html
          */
-        std::vector<ParallelCurves::Point> findIntersectionsBetweenCircles(ParallelCurves::Point center0, double radius0, ParallelCurves::Point center1, double radius1, double delta);
+        std::vector<Point> findIntersectionsBetweenCircles(Point center0, double radius0, Point center1, double radius1, double delta);
 
         /**
         * Find the tangent points for this circle and external point.
         * Return true if we find the tangents, false if the point is inside the circle.
         * @see: http://www.vb-helper.com/howto_net_find_circle_tangents.html
         **/
-        std::vector<ParallelCurves::Point> findTangentPoints(ParallelCurves::Point center, double radius, ParallelCurves::Point external_point, double distance, double delta);
+        std::vector<Point> findTangentPoints(Point center, double radius, Point external_point, double distance, double delta);
 
         bool containWaypointNearTo(const Point& other_node);
 
@@ -97,6 +96,8 @@ namespace parallel_curves {
 
         std::vector<Node> findPathSmooth(const Node& start_node, const Node& target_node);
 
+        std::vector<Node> findPathSmoothDistance(const Point& start, const Point& target, double & shortest);
+
     public:
         /**
          * Find a path between two configurations
@@ -104,7 +105,9 @@ namespace parallel_curves {
          * @param target_node: target configuration
         */
         std::vector<Point> plan(const Point& start_node, const Point& target_node);
-        
+        std::vector<double> radius() const {return R;}
+        bool isforward() const {return forward;}
+         
     protected:
         double _cell_size;
         double _min_distance_between_nodes;
@@ -112,7 +115,9 @@ namespace parallel_curves {
         int _max_iterations_inside_the_circle;
 
     private:
+        bool forward{true};
         std::vector<Node> S;
-        std::unique_ptr<Graph> G;
+        std::vector<double> R;
+        std::unique_ptr<Graph> G{nullptr};
     };
 };

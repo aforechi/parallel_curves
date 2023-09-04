@@ -5,7 +5,7 @@
 namespace parallel_curves 
 {
 
-    std::vector<ParallelCurves::Point> ParallelCurves::findIntersectionsBetweenCircles(Point center0, double radius0, Point center1, double radius1, double delta)
+    std::vector<Point> ParallelCurves::findIntersectionsBetweenCircles(Point center0, double radius0, Point center1, double radius1, double delta)
     {
 
         double cx0 = center0[0];
@@ -13,7 +13,7 @@ namespace parallel_curves
         double cx1 = center1[0];
         double cy1 = center1[1];
 
-        std::vector<ParallelCurves::Point> intersections;
+        std::vector<Point> intersections;
 
         // Find the distance between the centers.
         auto dx = cx0 - cx1;
@@ -46,8 +46,8 @@ namespace parallel_curves
         double cy2 = cy0 + a * (cy1 - cy0) / dist;
 
         // Get the points P3
-        ParallelCurves::Point intersection1 = {cx2 + h * (cy1 - cy0) / dist, cy2 - h * (cx1 - cx0) / dist};
-        ParallelCurves::Point intersection2 = {cx2 - h * (cy1 - cy0) / dist, cy2 + h * (cx1 - cx0) / dist};
+        Point intersection1 = {cx2 + h * (cy1 - cy0) / dist, cy2 - h * (cx1 - cx0) / dist};
+        Point intersection2 = {cx2 - h * (cy1 - cy0) / dist, cy2 + h * (cx1 - cx0) / dist};
 
         intersections.push_back(intersection1);
 
@@ -58,7 +58,7 @@ namespace parallel_curves
         return intersections;
     }
 
-    std::vector<ParallelCurves::Point> ParallelCurves::findTangentPoints(ParallelCurves::Point center, double radius, ParallelCurves::Point external_point, double distance, double delta)
+    std::vector<Point> ParallelCurves::findTangentPoints(Point center, double radius, Point external_point, double distance, double delta)
     {
         // Find the points of intersection between the original circle and the circle with center external_point and radius dist.
         return findIntersectionsBetweenCircles(center, radius, external_point, distance, delta);
@@ -78,8 +78,8 @@ namespace parallel_curves
         {
             if (!containWaypointNearTo(waypoint)) 
             {
-                Node waypoint_node(waypoint);
-                waypoint_node = G->addNode(waypoint_node); //TODO target_circle=dict(center=target_node, radius=target_radius))
+                Node waypoint_node(waypoint, target_radius);
+                waypoint_node = G->addNode(waypoint_node); 
                 G->addEdge(origin_node, waypoint_node, distance);   
                 S.push_back(waypoint_node);
             } 
@@ -89,14 +89,12 @@ namespace parallel_curves
     void ParallelCurves::addTangentNodes(const Node& origin_node, const Node& target_node, double target_radius) 
     {
         double distance = distanceBetweenExternalPointAndTangentPoints(target_node.center(), target_radius, origin_node.center());
-        std::vector<ParallelCurves::Point> tangent_points = findTangentPoints(target_node.center(), target_radius, origin_node.center(), distance, _cell_size);
+        std::vector<Point> tangent_points = findTangentPoints(target_node.center(), target_radius, origin_node.center(), distance, _cell_size);
         
         if (tangent_points.size() == 2) 
         {
             addWaypointNode(origin_node, tangent_points[0], target_node, target_radius, distance);
             addWaypointNode(origin_node, tangent_points[1], target_node, target_radius, distance);
-            //addWaypointNode(origin_node, tangent_points[0], origin_node, distance, distance);
-            //addWaypointNode(origin_node, tangent_points[1], origin_node, distance, distance);
         }
     }
 
@@ -123,8 +121,6 @@ namespace parallel_curves
         {
         
             auto origin_node = S.back(); S.pop_back();
-
-            //std::cerr << std::fixed << origin_node.center()[0] << " " << origin_node.center()[1] << std::endl;
 
             auto iterations_inside_the_circle = 0;
 
@@ -195,40 +191,48 @@ namespace parallel_curves
         return path;
     }
 
+    std::vector<Node> ParallelCurves::findPathSmoothDistance(const Point& start, const Point& target, double & shortest) 
+    {
+        Node start_node(start, 0), target_node(target, 0);
+
+        G = std::make_unique<Graph>();
+        start_node = G->addNode(start_node);
+        target_node = G->addNode(target_node);
+        auto waypoints = findPathSmooth(start_node, target_node);
+        shortest = findPathDistance(start_node, target_node);
+        G.reset();
+
+        return waypoints;
+    }
+
     std::vector<Point> ParallelCurves::plan(const Point& start, const Point& target) 
     {
-        Node start_node, target_node;
+        double distance_forward;
+        auto waypoints_forward = findPathSmoothDistance(start, target, distance_forward);
+        double distance_backward;
+        auto waypoints_backward = findPathSmoothDistance(target, start, distance_backward);
 
-        G = std::make_unique<Graph>();
-        start_node = G->addNode(start); //TODO target_circle=dict(center=target_node, radius=0))
-        target_node = G->addNode(target); //TODO target_circle=dict(center=target_node, radius=0))
-        auto waypoints_forward = findPathSmooth(start_node, target_node);
-        double distance_forward = findPathDistance(start_node, target_node);
-        auto path_forward = std::move(G);
-
-        G = std::make_unique<Graph>();
-        start_node = G->addNode(start); //TODO target_circle=dict(center=target_node, radius=0))
-        target_node = G->addNode(target); //TODO target_circle=dict(center=target_node, radius=0))
-        auto waypoints_backward = findPathSmooth(target_node, start_node);
-        double distance_backward = findPathDistance(target_node, start_node);
-        auto path_backward = std::move(G);
-        
+        R.clear();
         if (std::min(distance_forward, std::min(distance_backward, INF)) == INF)
         {
             return std::vector<Point>(0);
         }
         else if (distance_forward <= distance_backward) 
         {
-            G = std::move(path_forward);
+            forward = true;
             std::vector<Point> waypoints(waypoints_forward.size());
             std::copy(waypoints_forward.begin(), waypoints_forward.end(), waypoints.begin());
+            for(auto it = waypoints_forward.cbegin(); it != waypoints_forward.cend(); it++)
+                R.push_back(it->target());
             return waypoints;
         }
         else 
         {
-            G = std::move(path_backward);
+            forward = false;
             std::vector<Point> waypoints(waypoints_backward.size());
-            std::reverse_copy(waypoints_backward.begin(), waypoints_backward.end(), waypoints.begin());
+            std::copy(waypoints_backward.crbegin(), waypoints_backward.crend(), waypoints.begin());
+            for(auto it = waypoints_backward.crbegin(); it != waypoints_backward.crend(); it++)
+                R.push_back(it->target());
             return waypoints;
         }
     }

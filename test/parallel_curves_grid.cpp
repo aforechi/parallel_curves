@@ -3,6 +3,8 @@
 #include "map/environment.h"
 #include "map/grid.h"
 
+namespace parallel_curves {
+
 class ParallelCurvesCpp : public parallel_curves::ParallelCurves 
 {
 public:
@@ -54,12 +56,12 @@ private:
     Grid* grid;
 };
 
-typedef std::array<double,2> Point;
+}
 
 TEST(ParallelCurves, planning)
 {
-    Point start_pos = {4.6, 2.4};
-    Point end_pos = {1.6, 8};
+    parallel_curves::Point start_pos = {4.6, 2.4};
+    parallel_curves::Point end_pos = {1.6, 8};
 
     std::vector<std::array<double, 4> > obs = {
         {2, 3, 6, 0.1},
@@ -74,19 +76,26 @@ TEST(ParallelCurves, planning)
 
     auto grid = Grid(env);
 
-    auto pcurve = new ParallelCurvesCpp(&grid);
+    auto pcurve = new parallel_curves::ParallelCurvesCpp(&grid);
 
     auto path = pcurve->plan(start_pos, end_pos);
+    auto radius = pcurve->radius();
 
-    Point path_correct[] = {{4.6, 2.4}, 
+    parallel_curves::Point path_correct[] = {{4.6, 2.4}, 
                             {0.49667637112999685, 3.3799159131053544}, 
                             {1.8389143651466706, 5.762720418426307}, 
                             {4.129126211818629, 5.958916806033631}, 
                             {1.6, 8}};
 
+    double radius_correct[] = {0.0, 4.75, 2.25, 3.25, 0.0};
+
     EXPECT_EQ(path.size(), 5);
     for(int i=0; i<path.size(); i++)
         EXPECT_TRUE(path[i] == path_correct[i]);
+
+    EXPECT_EQ(radius.size(), 5);
+    for(int i=0; i<radius.size(); i++)
+        EXPECT_TRUE(radius[i] == radius_correct[i]);
 
     grid.save_costmap("/home/avelino/catkin_ws/src/parallel_curves/test/map/obstacles");
 

@@ -71,15 +71,16 @@ public:
    * @param plan The plan... filled by the planner
    * @return True if a valid plan was found, false otherwise
    */
-    bool makePlan(const geometry_msgs::PoseStamped& start, const geometry_msgs::PoseStamped& goal,
-    std::vector<geometry_msgs::PoseStamped>& plan);
+    bool makePlan(const geometry_msgs::PoseStamped& start, const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& plan);
 protected:
     bool directPath(const Point& start, const Point& goal);
+    void visualizeCurves(const std::vector<double> &radius, const Point &target);
 private:
     CollisionDetector* collision_{nullptr};
     costmap_2d::Costmap2D* costmap_{nullptr};
     bool initialized_{false};
     std::string global_frame_;
+    ros::Publisher marker_pub;
 };
 
 }
