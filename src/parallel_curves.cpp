@@ -191,9 +191,9 @@ namespace parallel_curves
         return path;
     }
 
-    std::vector<Node> ParallelCurves::findPathSmoothDistance(const Point& start, const Point& target, double & shortest) 
+    std::vector<Node> ParallelCurves::findPathSmoothDistance(const Point& start, const Point& target, double start_radius, double target_radius, double& shortest) 
     {
-        Node start_node(start, 0), target_node(target, 0);
+        Node start_node(start, start_radius), target_node(target, target_radius);
 
         G = std::make_unique<Graph>();
         start_node = G->addNode(start_node);
@@ -207,10 +207,11 @@ namespace parallel_curves
 
     std::vector<Point> ParallelCurves::plan(const Point& start, const Point& target) 
     {
+        double target_radius = distanceBetweenPoints(start, target);
         double distance_forward;
-        auto waypoints_forward = findPathSmoothDistance(start, target, distance_forward);
+        auto waypoints_forward = findPathSmoothDistance(start, target, target_radius, 0, distance_forward);
         double distance_backward;
-        auto waypoints_backward = findPathSmoothDistance(target, start, distance_backward);
+        auto waypoints_backward = findPathSmoothDistance(target, start, 0, target_radius, distance_backward);
 
         R.clear();
         if (std::min(distance_forward, std::min(distance_backward, INF)) == INF)

@@ -96,7 +96,7 @@ namespace parallel_curves {
 
         std::vector<Node> findPathSmooth(const Node& start_node, const Node& target_node);
 
-        std::vector<Node> findPathSmoothDistance(const Point& start, const Point& target, double & shortest);
+        std::vector<Node> findPathSmoothDistance(const Point& start, const Point& target, double start_radius, double target_radius, double & shortest);
 
     public:
         /**

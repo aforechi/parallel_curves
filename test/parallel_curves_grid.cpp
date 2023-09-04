@@ -87,7 +87,7 @@ TEST(ParallelCurves, planning)
                             {4.129126211818629, 5.958916806033631}, 
                             {1.6, 8}};
 
-    double radius_correct[] = {0.0, 4.75, 2.25, 3.25, 0.0};
+    double radius_correct[] = {6.35, 4.75, 2.25, 3.25, 0.0};
 
     EXPECT_EQ(path.size(), 5);
     for(int i=0; i<path.size(); i++)
@@ -95,7 +95,7 @@ TEST(ParallelCurves, planning)
 
     EXPECT_EQ(radius.size(), 5);
     for(int i=0; i<radius.size(); i++)
-        EXPECT_TRUE(radius[i] == radius_correct[i]);
+        EXPECT_NEAR(radius[i], radius_correct[i], 0.005);
 
     grid.save_costmap("/home/avelino/catkin_ws/src/parallel_curves/test/map/obstacles");
 
