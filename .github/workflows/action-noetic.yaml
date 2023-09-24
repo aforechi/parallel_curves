@@ -1,6 +1,6 @@
 # Based on https://github.com/ros-tooling/action-ros-ci
 
-name: Noetic Build
+name: ROS Noetic CI
 
 on:
   pull_request:
@@ -9,9 +9,9 @@ on:
       - 'README.md'
   push:
     branches:
-      - master
+      - main
 jobs:
-  noetic_source:
+  noetic_build:
     runs_on: ubuntu-20.04
     steps:
     - uses: ros-tooling/setup-ros@v0.6
@@ -21,3 +21,4 @@ jobs:
       with:
         package-name: parallel_curves
         target-ros1-distro: noetic
+        import-token: ${{ secrets.GITHUB_TOKEN }}
