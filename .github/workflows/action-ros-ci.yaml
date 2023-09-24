@@ -31,3 +31,4 @@ jobs:
         with:
           package-name: parallel_curves
           target-ros1-distro: ${{ matrix.ros_distro }}
+          import-token: ${{ secrets.GITHUB_TOKEN }}
