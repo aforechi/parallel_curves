@@ -22,6 +22,7 @@ catkin_package(
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS 
     roscpp
+    roslib
     costmap_2d
     pluginlib
     nav_core
@@ -61,16 +62,10 @@ install(FILES pc_plugin.xml
 )
 
 if(CATKIN_ENABLE_TESTING)
-  catkin_download_test_data(
-    willow_costmap.pgm
-    https://raw.githubusercontent.com/ros-planning/navigation/noetic-devel/navfn/test/willow_costmap.pgm
-    DESTINATION ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/tests
-    MD5 01e633f7a5cf84df6786bfaac8ab0368)
-
   find_package(rostest REQUIRED)
   catkin_add_gtest(shortest_path_test test/shortest_path.cpp)
   catkin_add_gtest(parallel_curves_grid_test test/parallel_curves_grid.cpp)
   catkin_add_gtest(parallel_curves_costmap_test test/parallel_curves_costmap.cpp test/map/read_pgm.cpp)
   target_link_libraries(parallel_curves_grid_test ${PROJECT_NAME})
-  target_link_libraries(parallel_curves_costmap_test ${PROJECT_NAME} netpbm)
+  target_link_libraries(parallel_curves_costmap_test ${catkin_LIBRARIES} ${PROJECT_NAME} netpbm)
 endif()

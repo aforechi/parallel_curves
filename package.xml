@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>parallel_curves</name>
-  <version>0.0.1</version>
+  <version>1.0.0</version>
   <description>The Parallel Curves Path Planning package</description>
 
   <maintainer email="avelino@lcad.inf.ufes.br">Avelino Forechi</maintainer>
@@ -23,6 +23,7 @@
   <buildtool_depend>catkin</buildtool_depend>
     
   <depend>roscpp</depend>
+  <depend>roslib</depend>
   <depend>costmap_2d</depend>
   <depend>nav_core</depend>
   <depend>pluginlib</depend>

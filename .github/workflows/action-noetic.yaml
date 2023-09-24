@@ -1,19 +1,23 @@
-# Based on https://github.com/ros-industrial/industrial_ci
+# Based on https://github.com/ros-tooling/action-ros-ci
 
-name: ROS_Industrial_CI-Noetic
+name: Noetic Build
 
 on:
   pull_request:
     paths-ignore:
-      - '**.md'
+      - 'doc/**'
+      - 'README.md'
+  push:
+    branches:
+      - master
 jobs:
-  industrial_ci:
-    strategy:
-      matrix:
-        env:
-          - {ROS_DISTRO: noetic, ROS_REPO: main}
-    runs-on: ubuntu-latest
+  noetic_source:
+    runs_on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
-      - uses: 'ros-industrial/industrial_ci@master'
-        env: ${{matrix.env}}
+    - uses: ros-tooling/setup-ros@v0.6
+      with:
+        required-ros-distributions: noetic
+    - uses: ros-tooling/action-ros-ci@v0.3
+      with:
+        package-name: parallel_curves
+        target-ros1-distro: noetic

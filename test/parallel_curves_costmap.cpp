@@ -28,6 +28,7 @@
  */
 
 #include <string>
+#include <ros/package.h>
 #include <gtest/gtest.h>
 #include <parallel_curves/parallel_curves.h>
 #include "map/read_pgm.h"
@@ -213,11 +214,19 @@ private:
 };
 
 }
+
+std::string get_map_path()
+{
+  std::string package_name = "parallel_curves";
+  return ros::package::getPath(package_name) + "/test/map/";
+}
+
 // Load a willow garage costmap and return a ParallelCurvesCostmap instance using it.
 parallel_curves::ParallelCurvesCostmap* make_willow_nav()
 {
   int sx,sy;
-  std::string path = "/home/avelino/catkin_ws/devel/.private/parallel_curves/share/parallel_curves/tests/willow_costmap.pgm";
+
+  std::string path = get_map_path() + "willow_costmap.pgm";
 
   u_char *cmap = readPGM( path.c_str(), sx, sy );
   if( cmap == NULL )
@@ -232,7 +241,8 @@ parallel_curves::ParallelCurvesCostmap* make_willow_nav()
 parallel_curves::ParallelCurvesCostmap* make_maze_nav()
 {
   int sx,sy;
-  std::string path = "/home/avelino/catkin_ws/src/parallel_curves/test/map/obstacles.pgm";
+
+  std::string path = get_map_path() + "obstacles.pgm";
 
   u_char *cmap = readPGM( path.c_str(), sx, sy );
   if( cmap == NULL )
