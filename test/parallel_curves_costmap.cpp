@@ -28,7 +28,7 @@
  */
 
 #include <string>
-#include <ros/package.h>
+//#include <ament_index_cpp/get_package_share_directory.hpp>
 #include <gtest/gtest.h>
 #include <parallel_curves/parallel_curves.h>
 #include "map/read_pgm.h"
@@ -218,7 +218,7 @@ private:
 std::string get_map_path()
 {
   std::string package_name = "parallel_curves";
-  return ros::package::getPath(package_name) + "/test/map/";
+  return /*ament_index_cpp::get_package_share_directory(package_name) +*/ "/test/map/";
 }
 
 // Load a willow garage costmap and return a ParallelCurvesCostmap instance using it.

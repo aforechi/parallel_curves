@@ -1,5 +1,5 @@
 #include <parallel_curves/collision_detector.h>
-#include <costmap_2d/cost_values.h>
+#include <nav2_costmap_2d/cost_values.hpp>
 
 namespace parallel_curves {
 
@@ -14,7 +14,7 @@ bool CollisionDetector::collisionFree(const Point& pt)
   if (!costmap_->worldToMap(pt[0], pt[1], mx, my))
     return false;
 
-  if (costmap_->getCost(mx, my) != costmap_2d::FREE_SPACE)
+  if (costmap_->getCost(mx, my) != nav2_costmap_2d::FREE_SPACE)
     return false;
 
   return true;
@@ -40,7 +40,7 @@ bool CollisionDetector::collisionFree(const Point &a, const Point &b)
     return false;
   
   for (const auto& p : bresenham({ax, ay}, {bx, by})) 
-    if (costmap_->getCost(p[0], p[1]) != costmap_2d::FREE_SPACE)
+    if (costmap_->getCost(p[0], p[1]) != nav2_costmap_2d::FREE_SPACE)
       return false;
 
   return true;
@@ -152,7 +152,7 @@ void CollisionDetector::clearRobotCell(const Point& start)
     return;
 
   //set the associated costs in the cost map to be free
-  costmap_->setCost(mx, my, costmap_2d::FREE_SPACE);
+  costmap_->setCost(mx, my, nav2_costmap_2d::FREE_SPACE);
 }
 
 } 

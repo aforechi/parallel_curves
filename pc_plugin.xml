@@ -1,5 +1,5 @@
-<library path="lib/libparallel_curves_ros">
-  <class name="parallel_curves/ParallelCurvesRos" type="parallel_curves::ParallelCurvesRos" base_class_type="nav_core::BaseGlobalPlanner">
+<library path="parallel_curves">
+  <class name="parallel_curves/ParallelCurvesRos" type="parallel_curves::ParallelCurvesRos" base_class_type="nav2_core::GlobalPlanner">
     <description>
       The Parallel Curves path planner based on tangent segments 
     </description>

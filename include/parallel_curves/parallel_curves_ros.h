@@ -1,19 +1,18 @@
 #pragma once
 
 #include <string>
-#include <ros/ros.h>
-#include <costmap_2d/costmap_2d_ros.h>
-#include <costmap_2d/costmap_2d.h>
-#include <nav_core/base_global_planner.h>
-#include <base_local_planner/world_model.h>
-#include <base_local_planner/costmap_model.h>
-#include <geometry_msgs/PoseStamped.h>
+#include <rclcpp/rclcpp.hpp>
+#include <nav2_costmap_2d/costmap_2d_ros.hpp>
+#include <nav2_costmap_2d/costmap_2d.hpp>
+#include <nav2_core/global_planner.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
 #include <angles/angles.h>
 #include <tf2/convert.h>
 #include <tf2/utils.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <parallel_curves/parallel_curves.h>
 #include <parallel_curves/collision_detector.h>
+#include <visualization_msgs/msg/marker_array.hpp>
 
 namespace parallel_curves
 {
@@ -21,66 +20,43 @@ namespace parallel_curves
 * @class ParallelCurves
 * @brief Provides a simple yet effective global planner that will compute a valid goal point for the local planner by finding tangent segments allong the parallel curves centered at the goal point.
 */
-class ParallelCurvesRos : public nav_core::BaseGlobalPlanner, public parallel_curves::ParallelCurves 
+class ParallelCurvesRos : public nav2_core::GlobalPlanner, public parallel_curves::ParallelCurves 
 {
 public:
-    /**
-    * @brief  Constructor
-    */
-    ParallelCurvesRos();
-    
-    /**
-    * @brief  Destructor
-    */
+
     ~ParallelCurvesRos();
  
-    /**
-    * @brief  Constructor for the ParallelCurves object
-    * @param  name The name of this planner
-    * @param  costmap_ros A pointer to the ROS wrapper of the costmap to use for planning
-    */
-    ParallelCurvesRos(std::string name, costmap_2d::Costmap2DROS* costmap_ros);
-   
-    /**
-     * @brief  Constructor for the ParallelCurves object
-     * @param  name The name of this planner
-     * @param  costmap A pointer to the costmap to use
-     * @param  global_frame The global frame of the costmap
-     */
-    ParallelCurvesRos(std::string name, costmap_2d::Costmap2D* costmap, std::string global_frame);
+    void configure(
+        const rclcpp_lifecycle::LifecycleNode::WeakPtr & parent,
+        std::string name, std::shared_ptr<tf2_ros::Buffer> tf,
+        std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros) override;
 
-    /**
-     * @brief  Initialization function for the ParallelCurves object
-     * @param  name The name of this planner
-     * @param  costmap A pointer to the ROS wrapper of the costmap to use for planning
-     */
-    void initialize(std::string name, costmap_2d::Costmap2DROS* costmap_ros);
+    void cleanup() override;
 
-    /**
-     * @brief  Initialization function for the ParallelCurves object
-     * @param  name The name of this planner
-     * @param  costmap A pointer to the costmap to use for planning
-     * @param  global_frame The global frame of the costmap
-     */
-    void initialize(std::string name, costmap_2d::Costmap2D* costmap, std::string global_frame);
+    void activate() override;
+
+    void deactivate() override;
 
   /**
    * @brief Given a start and goal pose in the world, compute a plan
    * @param start The start pose 
    * @param goal The goal pose 
-   * @param plan The plan... filled by the planner
-   * @return True if a valid plan was found, false otherwise
+   * @return plan The plan... filled by the planner
    */
-    bool makePlan(const geometry_msgs::PoseStamped& start, const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& plan);
+    nav_msgs::msg::Path createPlan(
+        const geometry_msgs::msg::PoseStamped & start,
+        const geometry_msgs::msg::PoseStamped & goal) override;
 protected:
     bool directPath(const Point& start, const Point& goal);
     void visualizeCurves(const std::vector<double> &radius, const Point &target);
+    rclcpp::Clock::SharedPtr clock_;
+    rclcpp::Logger logger_{rclcpp::get_logger("ParallelCurvesPlanner")};
 private:
     CollisionDetector* collision_{nullptr};
-    costmap_2d::Costmap2D* costmap_{nullptr};
-    bool initialized_{false};
-    std::string global_frame_;
-    ros::Publisher marker_pub;
+    nav2_costmap_2d::Costmap2D* costmap_{nullptr};
+    std::string global_frame_, name_;
+    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr marker_pub;
+    rclcpp_lifecycle::LifecycleNode::WeakPtr parent_node_;
 };
 
 }

@@ -21,12 +21,12 @@ namespace parallel_curves
         Point pt;
         double pcr; 
     public:
-        Node() : id(-1) {}
-        Node(int id): id(id) {}
-        Node(int id, Point pt): id(id), pt(pt) {}
-        Node(Point pt): id(-1), pt(pt) {}
+        Node() : id(-1), pt({INF,INF}), pcr(INF) {}
+        Node(int id): id(id), pt({INF,INF}), pcr(INF) {}
+        Node(int id, Point pt): id(id), pt(pt), pcr(INF) {}
+        Node(Point pt): id(-1), pt(pt), pcr(INF) {}
         Node(Point pt, double pcr): id(-1), pt(pt), pcr(pcr) {}
-        Node(Point pt, double pcr, int id): pt(pt), pcr(pcr), id(id) {}
+        Node(Point pt, double pcr, int id): id(id), pt(pt), pcr(pcr) {}
 
         constexpr int node() const {return id;}
 
@@ -78,7 +78,7 @@ namespace parallel_curves
         */
         ~Graph()
         {
-            for(int i=0; i < adj.size(); i++)
+            for(uint i=0; i < adj.size(); i++)
                 adj[i].clear();
             adj.clear();
             nodes.clear();
