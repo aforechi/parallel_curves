@@ -72,7 +72,7 @@ namespace parallel_curves
         return false;
     }
 
-    void ParallelCurves::addWaypointNode(const Node& origin_node, const Point& waypoint, const Node& target_node, double target_radius, double distance) 
+    void ParallelCurves::addWaypointNode(const Node& origin_node, const Point& waypoint, double target_radius, double distance) 
     {
         if (directPath(origin_node.center(), waypoint))
         {
@@ -93,8 +93,8 @@ namespace parallel_curves
         
         if (tangent_points.size() == 2) 
         {
-            addWaypointNode(origin_node, tangent_points[0], target_node, target_radius, distance);
-            addWaypointNode(origin_node, tangent_points[1], target_node, target_radius, distance);
+            addWaypointNode(origin_node, tangent_points[0], target_radius, distance);
+            addWaypointNode(origin_node, tangent_points[1], target_radius, distance);
         }
     }
 
@@ -108,7 +108,7 @@ namespace parallel_curves
                 Point secant_point = {target_node.center()[0] + target_radius * std::cos(arc + angular_offset), 
                                       target_node.center()[1] + target_radius * std::sin(arc + angular_offset)};
                 double distance = distanceBetweenPoints(origin_node.center(), secant_point);
-                addWaypointNode(origin_node, secant_point, target_node, target_radius, distance);
+                addWaypointNode(origin_node, secant_point, target_radius, distance);
             }
         }
     }
@@ -181,8 +181,8 @@ namespace parallel_curves
     {
         build(start_node, target_node);
         auto main_path = findShortestPath(start_node, target_node);
-        for(int i=1; i < main_path.size()-1; i++)
-            for(int j=i+1; j < main_path.size(); j++)
+        for(uint i=1; i < main_path.size()-1; i++)
+            for(uint j=i+1; j < main_path.size(); j++)
                 build(main_path[i], main_path[j]);
         auto main_path_after_start = std::vector<Node>(main_path.begin()+1, main_path.end());
         for(auto current_node : main_path_after_start)

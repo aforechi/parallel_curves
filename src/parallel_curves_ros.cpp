@@ -37,6 +37,7 @@ void ParallelCurvesRos::configure(
     std::string name, std::shared_ptr<tf2_ros::Buffer> tf,
     std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros)
 {
+    tf_ = tf;
     name_ = name;
     parent_node_ = parent;
     auto node = parent_node_.lock();
@@ -124,7 +125,7 @@ nav_msgs::msg::Path ParallelCurvesRos::createPlan(
     }
 
     global_path.poses[0].pose.orientation = start.pose.orientation;
-    for (int i=1; i < global_path.poses.size()-1; i++)
+    for (uint i=1; i < global_path.poses.size()-1; i++)
     {
         tf2::Quaternion waypoint_quat;
         waypoint_quat.setRPY(0, 0, atan2(global_path.poses[i].pose.position.y - global_path.poses[i-1].pose.position.y, 

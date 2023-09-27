@@ -49,8 +49,9 @@ public:
 protected:
     bool directPath(const Point& start, const Point& goal);
     void visualizeCurves(const std::vector<double> &radius, const Point &target);
+    std::shared_ptr<tf2_ros::Buffer> tf_;
     rclcpp::Clock::SharedPtr clock_;
-    rclcpp::Logger logger_{rclcpp::get_logger("ParallelCurvesPlanner")};
+    rclcpp::Logger logger_{rclcpp::get_logger("ParallelCurvesRos")};
 private:
     CollisionDetector* collision_{nullptr};
     nav2_costmap_2d::Costmap2D* costmap_{nullptr};

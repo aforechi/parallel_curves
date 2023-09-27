@@ -103,3 +103,20 @@ If you want to setup vscode please refer to https://samarth-robo.github.io/blog/
 ## Errors and Issues
 
 If you find some error or issue, please create a new issue and help me to improve this package.
+
+## Citation
+
+If you use the navigation algorithm from this repository, please cite this work in your papers!
+
+ - A. Baumgarten, L. Resendo, A. Forechi. [**Parallel Curves Path Planning Based on Tangent Segments to Concentric Curves**](https://arxiv.org/abs/). The 6th Iberian Robotics Conference (ROBOT2023), 2023.
+ 
+ ```bibtex
+ @InProceedings{macenski2020marathon2,
+   title = {Parallel Curves Path Planning Based on Tangent Segments to Concentric Curves},
+   author = {Baumgarten, Alysson and Resendo, Leandro and Forechi, Avelino},
+   year = {2023},
+   booktitle = {The 6th Iberian Robotics Conference (ROBOT2023)},
+   url = {https://github.com/aforechi/parallel_curves},
+   pdf = {https://arxiv.org/abs/}
+ }
+```

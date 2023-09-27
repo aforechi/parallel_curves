@@ -134,8 +134,8 @@ TEST(ShortestPath, shortestPath)
   auto path = g.shortestPath(nodes[0], nodes[14]);
   Node path_correct[] = {nodes[0], nodes[1], nodes[3], nodes[7], nodes[14]};
 
-  EXPECT_EQ(path.size(), 5);
-  for(int i=0; i<path.size(); i++)
+  EXPECT_EQ(path.size(), 5UL);
+  for(uint i=0; i<path.size(); i++)
     EXPECT_TRUE(path[i].node() == path_correct[i].node());
 }
 

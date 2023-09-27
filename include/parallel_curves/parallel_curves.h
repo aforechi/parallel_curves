@@ -82,7 +82,7 @@ namespace parallel_curves {
 
         bool containWaypointNearTo(const Point& other_node);
 
-        void addWaypointNode(const Node& origin_node, const Point& waypoint, const Node& target_node, double target_radius, double distance) ;
+        void addWaypointNode(const Node& origin_node, const Point& waypoint, double target_radius, double distance) ;
 
         void addTangentNodes(const Node& origin_node, const Node& target_node, double target_radius);
 
@@ -110,8 +110,8 @@ namespace parallel_curves {
          
     protected:
         double _cell_size;
-        double _min_distance_between_nodes;
         double _max_range;
+        double _min_distance_between_nodes;
         int _max_iterations_inside_the_circle;
 
     private:

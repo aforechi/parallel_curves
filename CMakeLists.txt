@@ -2,23 +2,13 @@ cmake_minimum_required(VERSION 3.3)
 
 project(parallel_curves LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 14)
+set( CMAKE_CXX_STANDARD 14 )
 
 set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake )
 
 find_package(NETPBM) #sudo apt install libnetpbm10-dev
 
-#find_package(ament_cmake REQUIRED)
-#find_package(ament_index_cpp REQUIRED)
-#find_package(rclcpp REQUIRED)
-#find_package(std_msgs REQUIRED)
-#find_package(nav2_costmap_2d REQUIRED)
-#find_package(pluginlib REQUIRED)
-#find_package(nav2_core REQUIRED)
-#find_package(geometry_msgs REQUIRED)
-
 find_package(ament_cmake REQUIRED)
-find_package(ament_index_cpp REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(nav2_common REQUIRED)
 find_package(nav2_core REQUIRED)
@@ -31,8 +21,7 @@ find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(tf2_ros REQUIRED)
 
-nav2_package() #Calls the nav2_package.cmake file
-add_compile_options(-O3)
+nav2_package() 
 
 set(dependencies ament_cmake
   builtin_interfaces
@@ -71,15 +60,15 @@ install(DIRECTORY include/
 )
 
 if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  ament_lint_auto_find_test_dependencies()
   find_package(ament_cmake_gtest REQUIRED)
 
   ament_add_gtest(shortest_path_test test/shortest_path.cpp)
-  ament_add_gtest(parallel_curves_grid_test test/parallel_curves_grid.cpp src/parallel_curves.cpp)
-  ament_add_gtest(parallel_curves_costmap_test test/parallel_curves_costmap.cpp src/parallel_curves.cpp test/map/read_pgm.cpp)
+  ament_add_gtest(parallel_curves_grid_test test/parallel_curves_grid.cpp src/parallel_curves.cpp
+    ENV PARALLEL_CURVES_MAP_PATH=${CMAKE_CURRENT_SOURCE_DIR}/test/map/)
+  ament_add_gtest(parallel_curves_costmap_test test/parallel_curves_costmap.cpp src/parallel_curves.cpp test/map/read_pgm.cpp
+    ENV PARALLEL_CURVES_MAP_PATH=${CMAKE_CURRENT_SOURCE_DIR}/test/map/)
   ament_target_dependencies(parallel_curves_costmap_test ${dependencies})
-  target_link_libraries(parallel_curves_costmap_test netpbm ament_index_cpp)
+  target_link_libraries(parallel_curves_costmap_test netpbm)
 endif()
 
 ament_export_include_directories(include)

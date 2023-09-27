@@ -28,7 +28,6 @@
  */
 
 #include <string>
-//#include <ament_index_cpp/get_package_share_directory.hpp>
 #include <gtest/gtest.h>
 #include <parallel_curves/parallel_curves.h>
 #include "map/read_pgm.h"
@@ -38,17 +37,18 @@ namespace parallel_curves {
 class ParallelCurvesCostmap : public parallel_curves::ParallelCurves 
 {
 public:
-    ~ParallelCurvesCostmap() {
+    ~ParallelCurvesCostmap() 
+    {
       if (costmap_ != nullptr)
         delete costmap_;
     }
-    ParallelCurvesCostmap() : costmap_(nullptr), 
-      parallel_curves::ParallelCurves() {}
+    ParallelCurvesCostmap() : parallel_curves::ParallelCurves(), costmap_(nullptr) {}
 
     ParallelCurvesCostmap(u_char* grid, int sx, int sy, double cs, double mr) : 
+      parallel_curves::ParallelCurves(), 
       costmap_(grid), 
-      size_x(sx), size_y(sy), 
-      parallel_curves::ParallelCurves() {
+      size_x(sx), size_y(sy)
+    {
         _cell_size = cs;
          _max_range = mr;
         _min_distance_between_nodes = 2 * _cell_size;
@@ -217,12 +217,11 @@ private:
 
 std::string get_map_path()
 {
-  std::string package_name = "parallel_curves";
-  return /*ament_index_cpp::get_package_share_directory(package_name) +*/ "/test/map/";
+  return std::getenv("PARALLEL_CURVES_MAP_PATH");
 }
 
 // Load a willow garage costmap and return a ParallelCurvesCostmap instance using it.
-parallel_curves::ParallelCurvesCostmap* make_willow_nav()
+std::unique_ptr<parallel_curves::ParallelCurvesCostmap> make_willow_nav()
 {
   int sx,sy;
 
@@ -233,12 +232,12 @@ parallel_curves::ParallelCurvesCostmap* make_willow_nav()
   {
     return NULL;
   }
-  parallel_curves::ParallelCurvesCostmap* nav = new parallel_curves::ParallelCurvesCostmap(cmap,sx,sy,1,80);
+  std::unique_ptr<parallel_curves::ParallelCurvesCostmap> nav( new parallel_curves::ParallelCurvesCostmap(cmap,sx,sy,1,80) );
 
   return nav;
 }
 
-parallel_curves::ParallelCurvesCostmap* make_maze_nav()
+std::unique_ptr<parallel_curves::ParallelCurvesCostmap> make_maze_nav()
 {
   int sx,sy;
 
@@ -249,14 +248,14 @@ parallel_curves::ParallelCurvesCostmap* make_maze_nav()
   {
     return NULL;
   }
-  parallel_curves::ParallelCurvesCostmap* nav = new parallel_curves::ParallelCurvesCostmap(cmap,sx,sy,0.25,8.0);
+  std::unique_ptr<parallel_curves::ParallelCurvesCostmap> nav( new parallel_curves::ParallelCurvesCostmap(cmap,sx,sy,0.25,8.0) );
 
   return nav;
 }
 
 TEST(PathCalc, oscillate_in_pinch_point)
 {
-  parallel_curves::ParallelCurvesCostmap* nav = make_willow_nav();
+  auto nav = make_willow_nav();
   ASSERT_TRUE( nav != NULL );
 
   parallel_curves::Point start = {428, 746};
@@ -265,13 +264,11 @@ TEST(PathCalc, oscillate_in_pinch_point)
   auto path = nav->plan( start, goal );
 
   EXPECT_TRUE( path.size() > 0 );
-  
-  delete nav;
 }
 
 TEST(PathCalc, maze_simple)
 {
-  parallel_curves::ParallelCurvesCostmap* nav = make_maze_nav();
+  auto nav = make_maze_nav();
   ASSERT_TRUE( nav != NULL );
 
   parallel_curves::Point start = {4.6, 2.4};
@@ -279,7 +276,7 @@ TEST(PathCalc, maze_simple)
 
   auto path = nav->plan( start, goal );
 
-  EXPECT_EQ(path.size(), 5);
+  EXPECT_EQ(path.size(), 5UL);
 
   parallel_curves::Point path_correct[] = {{4.6, 2.4}, 
                           {0.49667637112999685, 3.3799159131053544}, 
@@ -287,15 +284,13 @@ TEST(PathCalc, maze_simple)
                           {4.129126211818629, 5.958916806033631}, 
                           {1.6, 8}};
 
-  for(int i=0; i<path.size(); i++)
+  for(uint i=0; i<path.size(); i++)
       EXPECT_TRUE(path[i] == path_correct[i]);
-
-  delete nav;
 }
 
 TEST(PathCalc, easy_nav_should_always_work)
 {
-  parallel_curves::ParallelCurvesCostmap* nav = make_willow_nav();
+  auto nav = make_willow_nav();
   ASSERT_TRUE( nav != NULL );
 
   parallel_curves::Point start = {350, 400};
@@ -304,8 +299,6 @@ TEST(PathCalc, easy_nav_should_always_work)
   auto path = nav->plan( start, goal );
 
   EXPECT_TRUE( path.size() > 0 );
-
-  delete nav;
 }
 
 int main(int argc, char** argv) {

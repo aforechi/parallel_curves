@@ -68,13 +68,14 @@ public:
         fprintf(fp,"P5\n%d\n%d\n%d\n", nx, ny, UCHAR_MAX);
         
         int k = 0;
-        char grid_flatenned[nx*ny];
+        char *grid_flatenned = new char[nx*ny]();
         for (int j=ny-1; j>=0; j--)  //origin is row zero
             for (int i=0; i<nx; i++) //origin is col zero
                 grid_flatenned[k++] = (grid[i][j] == 1 ? 0u : 255u);
         
         fwrite(grid_flatenned,1,nx*ny,fp);
         fclose(fp);
+        delete [] grid_flatenned;
     }
 
     std::array<int, 2> to_cell_id(const std::array<double, 2>& pt) {
