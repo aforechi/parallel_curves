@@ -1,5 +1,5 @@
 # `parallel-curves`
-[![CI-Noetic](https://github.com/aforechi/parallel_curves/actions/workflows/action-noetic.yaml/badge.svg)](https://github.com/aforechi/parallel_curves/actions/workflows/action-noetic.yaml) [![ros-action-ci](https://github.com/aforechi/parallel_curves/actions/workflows/action-ros-ci.yaml/badge.svg)](https://github.com/aforechi/parallel_curves/actions/workflows/action-ros-ci.yaml)
+[![CI-ROS](https://github.com/aforechi/parallel_curves/actions/workflows/action-ros.yaml/badge.svg)](https://github.com/aforechi/parallel_curves/actions/workflows/action-ros.yaml)
 
 
 <p float="left">

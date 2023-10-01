@@ -1,6 +1,6 @@
 # Based on https://github.com/ros-tooling/action-ros-ci
 
-name: ROS Noetic CI
+name: ROS Humble CI
 
 on:
   pull_request:
@@ -12,13 +12,13 @@ on:
       - main
 jobs:
   noetic_build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
     - uses: ros-tooling/setup-ros@v0.6
       with:
-        required-ros-distributions: noetic
+        required-ros-distributions: humble
     - uses: ros-tooling/action-ros-ci@v0.3
       with:
         package-name: parallel_curves
-        target-ros1-distro: noetic
+        target-ros1-distro: humble
         import-token: ${{ secrets.GITHUB_TOKEN }}
