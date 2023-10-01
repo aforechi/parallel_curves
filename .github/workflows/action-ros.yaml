@@ -11,7 +11,7 @@ on:
     branches:
       - main
 jobs:
-  noetic_build:
+  humble_build:
     runs-on: ubuntu-22.04
     steps:
     - uses: ros-tooling/setup-ros@v0.6
@@ -20,5 +20,5 @@ jobs:
     - uses: ros-tooling/action-ros-ci@v0.3
       with:
         package-name: parallel_curves
-        target-ros1-distro: humble
+        target-ros2-distro: humble
         import-token: ${{ secrets.GITHUB_TOKEN }}
