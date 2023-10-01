@@ -23,7 +23,7 @@ namespace parallel_curves
 class ParallelCurvesRos : public nav2_core::GlobalPlanner, public parallel_curves::ParallelCurves 
 {
 public:
-
+    ParallelCurvesRos();
     ~ParallelCurvesRos();
  
     void configure(
@@ -53,6 +53,7 @@ protected:
     rclcpp::Clock::SharedPtr clock_;
     rclcpp::Logger logger_{rclcpp::get_logger("ParallelCurvesRos")};
 private:
+    int line_splits_{2};
     CollisionDetector* collision_{nullptr};
     nav2_costmap_2d::Costmap2D* costmap_{nullptr};
     std::string global_frame_, name_;

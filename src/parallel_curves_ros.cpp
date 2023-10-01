@@ -1,14 +1,22 @@
 #include <parallel_curves/parallel_curves_ros.h>
 #include <pluginlib/class_list_macros.hpp>
 #include <visualization_msgs/msg/marker.hpp>
+#include <nav2_core/exceptions.hpp>
 
 //register this planner as a BaseGlobalPlanner plugin
 PLUGINLIB_EXPORT_CLASS(parallel_curves::ParallelCurvesRos, nav2_core::GlobalPlanner)
 
 namespace parallel_curves {
 
+ParallelCurvesRos::ParallelCurvesRos()
+: tf_(nullptr), costmap_(nullptr)
+{
+}
+
 ParallelCurvesRos::~ParallelCurvesRos()
 {
+    RCLCPP_INFO(logger_, "Destroying plugin %s of type ParallelCurves", name_.c_str());
+
     if (collision_)
     {
         delete collision_;
@@ -57,6 +65,9 @@ void ParallelCurvesRos::configure(
     node->get_parameter(name_ + ".max_iter_inside_circle", _max_iterations_inside_the_circle);
     node->declare_parameter(name_ + ".max_range", std::hypot(costmap_->getSizeInMetersX(), costmap_->getSizeInMetersY()) );
     node->get_parameter(name_ + ".max_range", _max_range);
+    node->declare_parameter(name_ + ".line_splits_", 2);
+    node->get_parameter(name_ + ".line_splits_", line_splits_);
+
 
     marker_pub = node->create_publisher<visualization_msgs::msg::MarkerArray>("/visualization_marker_array", 1);
 
@@ -74,12 +85,6 @@ nav_msgs::msg::Path ParallelCurvesRos::createPlan(
 {
     nav_msgs::msg::Path global_path;
 
-    if(goal.header.frame_id != global_frame_)
-    {
-        RCLCPP_ERROR(logger_, "This planner as configured will only accept goals in the %s frame, but a goal was sent in the %s frame.", 
-            global_frame_.c_str(), goal.header.frame_id.c_str());
-        return global_path;
-    }
     global_path.header.stamp = clock_->now();
     global_path.header.frame_id = global_frame_;
 
@@ -91,14 +96,14 @@ nav_msgs::msg::Path ParallelCurvesRos::createPlan(
 
     if (!collision_->collisionFree(start2D)) 
     {
-        RCLCPP_ERROR(logger_, "Start point chosen is NOT in the FREE SPACE! Choose other goal!");
-        return global_path;
+        throw nav2_core::PlannerException("Start Coordinates of(" + std::to_string(start.pose.position.x) + ", " +
+            std::to_string(start.pose.position.y) + ") was in lethal cost");
     }
 
     if (!collision_->collisionFree(goal2D)) 
     {
-        RCLCPP_ERROR(logger_, "Goal point chosen is NOT in the FREE SPACE! Choose other goal!");
-        return global_path;
+        throw nav2_core::PlannerException("Goal Coordinates of(" + std::to_string(goal.pose.position.x) + ", " +
+            std::to_string(goal.pose.position.y) + ") was in lethal cost");
     }
 
     RCLCPP_INFO(logger_, "Parallel Curves Global Planner");
@@ -109,21 +114,33 @@ nav_msgs::msg::Path ParallelCurvesRos::createPlan(
 
     if (path.size() < 2)
     {
-        RCLCPP_WARN(logger_, "The planner failed to find a path, choose other goal position");
-        return global_path;
+        throw nav2_core::PlannerException("The planner failed to find a path, choose other goal position");
     }
 
-    for (const auto &point2D : path) 
+    // Split path segments
+    for (uint p=0; p < path.size()-1; p++) 
     {
-        geometry_msgs::msg::PoseStamped pose;
-        pose.header.stamp = clock_->now();
-        pose.header.frame_id = global_frame_;
-        pose.pose.position.x = point2D[0];
-        pose.pose.position.y = point2D[1];
-        pose.pose.position.z = 0.0;
-        global_path.poses.push_back(pose);
-    }
+        double x_increment = (path[p+1][0] - path[p][0]) / static_cast<double>(line_splits_ + 1);
+        double y_increment = (path[p+1][1] - path[p][1]) / static_cast<double>(line_splits_ + 1);
 
+        for (int i = 0; i <= line_splits_; i++) 
+        {
+            geometry_msgs::msg::PoseStamped pose;
+            pose.header = global_path.header;
+            pose.pose.position.x = path[p][0] + x_increment * i;
+            pose.pose.position.y = path[p][1] + y_increment * i;
+            pose.pose.position.z = 0.0;
+            global_path.poses.push_back(pose);
+        }
+    }
+    geometry_msgs::msg::PoseStamped pose;
+    pose.header = global_path.header;
+    pose.pose.position.x = path.back()[0];
+    pose.pose.position.y = path.back()[1];
+    pose.pose.position.z = 0.0;
+    global_path.poses.push_back(pose);
+
+    // Fill path orientation
     global_path.poses[0].pose.orientation = start.pose.orientation;
     for (uint i=1; i < global_path.poses.size()-1; i++)
     {

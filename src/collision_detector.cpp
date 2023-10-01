@@ -14,7 +14,8 @@ bool CollisionDetector::collisionFree(const Point& pt)
   if (!costmap_->worldToMap(pt[0], pt[1], mx, my))
     return false;
 
-  if (costmap_->getCost(mx, my) != nav2_costmap_2d::FREE_SPACE)
+  if (costmap_->getCost(mx, my) == nav2_costmap_2d::LETHAL_OBSTACLE ||
+      costmap_->getCost(mx, my) == nav2_costmap_2d::INSCRIBED_INFLATED_OBSTACLE)
     return false;
 
   return true;
@@ -40,7 +41,8 @@ bool CollisionDetector::collisionFree(const Point &a, const Point &b)
     return false;
   
   for (const auto& p : bresenham({ax, ay}, {bx, by})) 
-    if (costmap_->getCost(p[0], p[1]) != nav2_costmap_2d::FREE_SPACE)
+    if (costmap_->getCost(p[0], p[1]) == nav2_costmap_2d::LETHAL_OBSTACLE ||
+        costmap_->getCost(p[0], p[1]) == nav2_costmap_2d::INSCRIBED_INFLATED_OBSTACLE)
       return false;
 
   return true;
