@@ -77,15 +77,15 @@ If you find some error or issue, please create a new issue and help me to improv
 
 If you use the navigation algorithm from this repository, please cite this work in your papers!
 
- - A. Baumgarten, L. Resendo, A. Forechi. [**Parallel Curves Path Planning Based on Tangent Segments to Concentric Curves**](https://arxiv.org/abs/). The 6th Iberian Robotics Conference (ROBOT2023), 2023.
+ - A. Baumgarten, L. Resendo, A. Forechi. [**Parallel Curves Path Planning Based on Tangent Segments to Concentric Curves**](https://link.springer.com/chapter/10.1007/978-3-031-58676-7_21). Robot 2023: Sixth Iberian Robotics Conference, 2023.
  
  ```bibtex
  @InProceedings{baumgarten2023,
    title = {Parallel Curves Path Planning Based on Tangent Segments to Concentric Curves},
    author = {Baumgarten, Alysson and Resendo, Leandro and Forechi, Avelino},
    year = {2023},
-   booktitle = {The 6th Iberian Robotics Conference (ROBOT2023)},
+   booktitle = {Robot 2023: Sixth Iberian Robotics Conference},
    url = {https://github.com/aforechi/parallel_curves},
-   pdf = {https://arxiv.org/abs/}
+   pdf = {https://link.springer.com/chapter/10.1007/978-3-031-58676-7_21}
  }
 ```
